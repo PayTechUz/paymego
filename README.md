@@ -1,18 +1,27 @@
+# Payme Implementation
+
+This MVP project helps for implementing <a href="https://developer.help.paycom.uz">payme-doc</a>.
+
+# Installation
+1 - `go get -v github.com/paytechuz/paymego`
+
+## Example
+```go
+
 package main
 
 import (
 	"context"
 	"fmt"
-
 	"github.com/paytechuz/paymego"
 )
 
 func main() {
 	ctx := context.Background()
 	s, err := paymego.NewSubscribeAPI(paymego.SubsribeAPIOpts{
-		PaycomID:  "5feb5dd783c40aed047fe655",
-		PaycomKey: "rwAAUFwRSFI5&eYtuq5Q7jd7u@Y6kRcRw44g",
-		BaseURL:   "https://checkout.paycom.uz/api/",
+		PaycomID:  "paycom-id",
+		PaycomKey: "paycom-key",
+		BaseURL:   "paycom-api-url",
 	})
 	if err != nil {
 		panic(err)
@@ -26,5 +35,5 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("response %+v", r)
-
 }
+```

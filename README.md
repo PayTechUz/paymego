@@ -7,33 +7,59 @@ This MVP project helps for implementing <a href="https://developer.help.paycom.u
 
 ## Example
 ```go
-
 package main
 
 import (
-	"context"
 	"fmt"
+
 	"github.com/paytechuz/paymego"
 )
 
 func main() {
-	ctx := context.Background()
 	s, err := paymego.NewSubscribeAPI(paymego.SubsribeAPIOpts{
 		PaycomID:  "paycom-id",
 		PaycomKey: "paycom-key",
-		BaseURL:   "paycom-api-url",
+		BaseURL:   "https://checkout.test.paycom.uz/api/",
 	})
+
 	if err != nil {
 		panic(err)
 	}
-	r, err := s.CreateReceipt(ctx, "2134567879654321", "blabl", "awdaw", 2500, paymego.Account{
-		OrderID:  "2383",
-		CardID:   "129812",
-		ReasonID: "12",
-	})
+
+	// Example usage:
+	cardClient := paymego.CardData{
+		ID:    "123456789",
+		Token: "card-token",
+	}
+
+	cardDriver := paymego.CardData{
+		ID:    "123456789",
+		Token: "card-token",
+	}
+
+	paymentDataClient := paymego.PaymentData{
+		OrderID:  "order123",
+		CardData: cardClient,
+	}
+
+	paymentDataDriver := paymego.PaymentData{
+		OrderID:  "order123",
+		CardData: cardDriver,
+	}
+
+	paymentDetails := paymego.PaymentDetails{
+		Client: paymentDataClient,
+		Driver: paymentDataDriver,
+		Amount: 100000,
+	}
+
+	resp, err := s.Pay(paymentDetails)
+
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("response %+v", r)
+
+	fmt.Println("Response: ", resp)
+
 }
 ```

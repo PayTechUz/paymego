@@ -57,6 +57,7 @@ func (c *SubscribeAPI) sendRequest(requestID, method string, params interface{},
 
 	requestBody, _ := json.Marshal(data)
 	request, err := http.NewRequest("POST", c.baseURL, bytes.NewBuffer(requestBody))
+
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +95,7 @@ func (c *SubscribeAPI) sendRequest(requestID, method string, params interface{},
 	responseJson, err = handleErrorResponse(responseJson)
 
 	if err != nil {
-		logrus.Errorf("error response from payme response - %v error - %v params - %s", responseJson.Error, err, params)
+		logrus.Errorf("error response from payme response - %v error - %v", responseJson.Error, err)
 	}
 
 	return &responseJson, err

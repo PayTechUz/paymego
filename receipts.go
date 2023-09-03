@@ -105,7 +105,7 @@ func (c *SubscribeAPI) Pay(data PaymentDetails) (paidReceiptsID string, err erro
 }
 
 // create check p2p
-func (p *SubscribeAPI) createCheckP2P(data PaymentDetails) (createdReceiptsID string, err error) {
+func (c *SubscribeAPI) createCheckP2P(data PaymentDetails) (createdReceiptsID string, err error) {
 	// Create receipt request-id
 	requestID := fmt.Sprintf("ReceiptsCreate:P2PTransaction:%s", data.Client.OrderID)
 	description := fmt.Sprintf("P2PTransaction for order %s", data.Client.OrderID)
@@ -116,7 +116,7 @@ func (p *SubscribeAPI) createCheckP2P(data PaymentDetails) (createdReceiptsID st
 		"description": description,
 	}
 
-	respCreateReceipt, err := p.sendRequest(requestID, "receipts.p2p", receiptParams, false)
+	respCreateReceipt, err := c.sendRequest(requestID, "receipts.p2p", receiptParams, false)
 
 	if err != nil {
 		logrus.Errorf("failed receipts create p2p (error - %v request-id - %s response - %v", err, requestID, respCreateReceipt)

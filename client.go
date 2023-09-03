@@ -101,7 +101,7 @@ func (c *SubscribeAPI) sendRequest(
 
 	if err != nil {
 		if timeoutError {
-			return nil, &PaymeTimeoutError{}
+			return nil, ErrPaymeTimeoutError
 		}
 		return nil, err
 	}
@@ -132,10 +132,10 @@ func (c *SubscribeAPI) sendRequest(
 
 func (s SubsribeAPIOpts) validate() error {
 	if s.PaycomID == "" {
-		return &ErrEmptyOrInvalidPaycomID{}
+		return ErrErrEmptyOrInvalidPaycomID
 	}
 	if s.PaycomKey == "" {
-		return &ErrEmptyOrInvalidPaycomKey{}
+		return ErrEmptyOrInvalidPaycomKey
 	}
 	return nil
 }

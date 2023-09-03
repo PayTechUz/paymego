@@ -7,26 +7,26 @@ func handleErrorResponse(responseJson PaymeResponse) (PaymeResponse, error) {
 
 	switch errorCode {
 	case P2PIndenticalCardsErrorCode:
-		paymeError = &P2PIndenticalCardsError{}
+		paymeError = ErrP2PIdenticalCards
 	case InvalidAmoutErrorCode:
-		paymeError = &InvalidAmountError{}
+		paymeError = ErrInvalidAmountError
 	case InvalidParamsErrorCode:
-		paymeError = &InvalidParamsError{}
+		paymeError = ErrInvalidParamsError
 	case CardNotFoundErrorCode:
-		paymeError = &CardNotFoundError{}
+		paymeError = ErrCardNotFoundError
 	case InvalidFormatTokenErrorCode:
-		paymeError = &InvalidFormatTokenError{}
+		paymeError = ErrInvalidFormatTokenError
 	case CardNumberNotFoundCode:
-		paymeError = &CardNotFoundError{}
+		paymeError = ErrCardNotFoundError
 	case CardExpiredCode:
-		paymeError = &CardExpiredError{}
+		paymeError = ErrCardExpiredError
 	case ProcessingCenterNotAvailableCode:
-		paymeError = &ProcessingCenterNotAvailableError{}
+		paymeError = ErrProcessingCenterNotAvailableError
 	case PaycomServiceNotAvailableCode:
-		paymeError = &PaycomServiceNotAvailableError{}
+		paymeError = ErrPaycomServiceNotAvailableError
 	default:
 		if errorCode != 0 {
-			paymeError = &PaymeError{}
+			paymeError = ErrPaymeError
 		}
 	}
 

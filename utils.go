@@ -16,6 +16,14 @@ func handleErrorResponse(responseJson PaymeResponse) (PaymeResponse, error) {
 		paymeError = &CardNotFoundError{}
 	case InvalidFormatTokenErrorCode:
 		paymeError = &InvalidFormatTokenError{}
+	case CardNumberNotFoundCode:
+		paymeError = &CardNotFoundError{}
+	case CardExpiredCode:
+		paymeError = &CardExpiredError{}
+	case ProcessingCenterNotAvailableCode:
+		paymeError = &ProcessingCenterNotAvailableError{}
+	case PaycomServiceNotAvailableCode:
+		paymeError = &PaycomServiceNotAvailableError{}
 	default:
 		if errorCode != 0 {
 			paymeError = &PaymeError{}

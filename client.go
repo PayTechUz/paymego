@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -93,9 +94,15 @@ func (c *SubscribeAPI) sendRequest(
 	req.Header.Set("Content-Type", "application/json")
 
 	client := http.Client{}
+
 	response, err := client.Do(req)
 
+	timeoutError := errors.Is(err, context.DeadlineExceeded)
+
 	if err != nil {
+		if timeoutError {
+			return nil, &PaymeTimeoutError{}
+		}
 		return nil, err
 	}
 	defer response.Body.Close()

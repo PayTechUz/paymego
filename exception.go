@@ -6,12 +6,22 @@ const (
 	P2PIndenticalCardsErrorCode = -31630
 	CardNotFoundErrorCode       = -31400
 	InvalidFormatTokenErrorCode = -32500
+	CardNumberNotFoundCode      = -31300
+	CardExpiredCode             = -31301
+
+	// fail
+	PaycomServiceNotAvailableCode    = -31001
+	ProcessingCenterNotAvailableCode = -31002
 )
 
+type PaymeTimeoutError struct{}
 type PaymeError struct{}
 type InvalidAmountError struct{}
 type InvalidParamsError struct{}
 type P2PIndenticalCardsError struct{}
+type PaycomServiceNotAvailableError struct{}
+type ProcessingCenterNotAvailableError struct{}
+type CardExpiredError struct{}
 type CardNotFoundError struct{}
 type InvalidFormatTokenError struct{}
 type ErrEmptyOrInvalidPaycomID struct{}
@@ -55,4 +65,22 @@ func (e ErrEmptyOrInvalidPaycomID) Error() string {
 // invalid paycomKey
 func (e ErrEmptyOrInvalidPaycomKey) Error() string {
 	return "invalid paycomKey"
+}
+
+func (e ProcessingCenterNotAvailableError) Error() string {
+	return "processing center not available"
+}
+
+func (e PaycomServiceNotAvailableError) Error() string {
+	return "paycom service not available"
+}
+
+// card expired error
+func (e CardExpiredError) Error() string {
+	return "card expired"
+}
+
+// payme timeout exceeded
+func (e PaymeTimeoutError) Error() string {
+	return "payme timeout exceeded"
 }

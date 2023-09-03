@@ -23,7 +23,7 @@ func main() {
 		panic(err)
 	}
 
-	resp, err := s.CardsRemove(ctx, "uuid4", "card-token")
+	resp, err := s.CardsCheck(ctx, "uuid4", "card-token")
 
 	if err != nil {
 		panic(err)

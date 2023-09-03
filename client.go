@@ -35,9 +35,6 @@ type xAuthHeaders struct {
 	paycomKey string
 }
 
-// Define a constant for an unlimited timeout
-const unlimitedTimeout = 0
-
 // NewSubscribeAPI returns new instance of SubscribeAPI
 func NewSubscribeAPI(args SubsribeAPIOpts) (SubscribeAPI, error) {
 	err := args.validate()
@@ -68,7 +65,7 @@ func (c *SubscribeAPI) sendRequest(
 	if len(timeout) > 0 {
 		requestTimeout = timeout[0]
 	} else {
-		requestTimeout = 0 // Default timeout (adjust as needed)
+		requestTimeout = c.timeout
 	}
 
 	// Create a context with the specified timeout.

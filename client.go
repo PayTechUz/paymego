@@ -95,7 +95,7 @@ func (c *SubscribeAPI) sendRequest(requestID, method string, params interface{},
 	responseJson, err = handleErrorResponse(responseJson)
 
 	if err != nil {
-		logrus.Errorf("error response from payme response - %v error - %v", responseJson.Error, err)
+		logrus.Errorf("error response from payme - %v error - %v", responseJson.Error, err)
 	}
 
 	return &responseJson, err

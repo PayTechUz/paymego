@@ -1,6 +1,7 @@
 package paymego
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/sirupsen/logrus"
@@ -34,7 +35,7 @@ type Account struct {
 }
 
 // create merchant check
-func (c *SubscribeAPI) createCheck(data PaymentDetails) (createdReceiptsID string, err error) {
+func (c *SubscribeAPI) createCheck(ctx context.Context, data PaymentDetails) (createdReceiptsID string, err error) {
 	requestID := fmt.Sprintf("ReceiptsCreate:MerchantTransaction:%s", data.Client.OrderID)
 
 	receiptParams := map[string]interface{}{
@@ -47,7 +48,7 @@ func (c *SubscribeAPI) createCheck(data PaymentDetails) (createdReceiptsID strin
 		"description": fmt.Sprintf(Description, data.Client.OrderID),
 	}
 
-	respCreateReceipt, err := c.sendRequest(requestID, "receipts.create", receiptParams, false)
+	respCreateReceipt, err := c.sendRequest(ctx, requestID, "receipts.create", receiptParams, false)
 
 	if err != nil {
 		logrus.Errorf("failed receipts create (error - %v request-id - %s response - %v)", err, requestID, respCreateReceipt)
@@ -62,7 +63,7 @@ func (c *SubscribeAPI) createCheck(data PaymentDetails) (createdReceiptsID strin
 }
 
 // pay merchant check
-func (c *SubscribeAPI) payCheck(data PaymentDetails, createdReceiptsID string) (paidReceiptsID string, err error) {
+func (c *SubscribeAPI) payCheck(ctx context.Context, data PaymentDetails, createdReceiptsID string) (paidReceiptsID string, err error) {
 	// Create receipt request-id
 	requestID := fmt.Sprintf("ReceiptsPay:%s", data.Client.OrderID)
 
@@ -71,7 +72,7 @@ func (c *SubscribeAPI) payCheck(data PaymentDetails, createdReceiptsID string) (
 		"token": data.Client.CardData.Token, // payer card token
 	}
 
-	respPayReceipt, err := c.sendRequest(requestID, "receipts.pay", receiptParams, false)
+	respPayReceipt, err := c.sendRequest(ctx, requestID, "receipts.pay", receiptParams, false)
 
 	if err != nil {
 		logrus.Errorf("failed receipts pay (error - %v request-id - %s receipts-id %s response - %v)", err, requestID, createdReceiptsID, respPayReceipt.Error)
@@ -86,16 +87,16 @@ func (c *SubscribeAPI) payCheck(data PaymentDetails, createdReceiptsID string) (
 }
 
 // create and pay merchant check
-func (c *SubscribeAPI) Pay(data PaymentDetails) (paidReceiptsID string, err error) {
+func (c *SubscribeAPI) Pay(ctx context.Context, data PaymentDetails) (paidReceiptsID string, err error) {
 	// create check
-	createdReceiptsID, err := c.createCheck(data)
+	createdReceiptsID, err := c.createCheck(ctx, data)
 
 	if err != nil {
 		return createdReceiptsID, err
 	}
 
 	// pay check
-	paidReceiptsID, err = c.payCheck(data, createdReceiptsID)
+	paidReceiptsID, err = c.payCheck(ctx, data, createdReceiptsID)
 
 	if err != nil {
 		return createdReceiptsID, err
@@ -105,7 +106,7 @@ func (c *SubscribeAPI) Pay(data PaymentDetails) (paidReceiptsID string, err erro
 }
 
 // create check p2p
-func (c *SubscribeAPI) createCheckP2P(data PaymentDetails) (createdReceiptsID string, err error) {
+func (c *SubscribeAPI) createCheckP2P(ctx context.Context, data PaymentDetails) (createdReceiptsID string, err error) {
 	// Create receipt request-id
 	requestID := fmt.Sprintf("ReceiptsCreate:P2PTransaction:%s", data.Client.OrderID)
 	description := fmt.Sprintf("P2PTransaction for order %s", data.Client.OrderID)
@@ -116,7 +117,7 @@ func (c *SubscribeAPI) createCheckP2P(data PaymentDetails) (createdReceiptsID st
 		"description": description,
 	}
 
-	respCreateReceipt, err := c.sendRequest(requestID, "receipts.p2p", receiptParams, false)
+	respCreateReceipt, err := c.sendRequest(ctx, requestID, "receipts.p2p", receiptParams, false)
 
 	if err != nil {
 		logrus.Errorf("failed receipts create p2p (error - %v request-id - %s response - %v", err, requestID, respCreateReceipt)
@@ -131,7 +132,7 @@ func (c *SubscribeAPI) createCheckP2P(data PaymentDetails) (createdReceiptsID st
 }
 
 // pay p2p check
-func (c *SubscribeAPI) payCheckP2P(data PaymentDetails, createdReceiptsID string) (paidReceiptsID string, err error) {
+func (c *SubscribeAPI) payCheckP2P(ctx context.Context, data PaymentDetails, createdReceiptsID string) (paidReceiptsID string, err error) {
 	// Create receipt request-id
 	requestID := fmt.Sprintf("ReceiptsPay:%s", data.Client.OrderID)
 
@@ -140,7 +141,7 @@ func (c *SubscribeAPI) payCheckP2P(data PaymentDetails, createdReceiptsID string
 		"token": data.Client.CardData.Token, // payer card token
 	}
 
-	respPayReceipt, err := c.sendRequest(requestID, "receipts.pay", receiptParams, false)
+	respPayReceipt, err := c.sendRequest(ctx, requestID, "receipts.pay", receiptParams, false)
 
 	if err != nil {
 		logrus.Errorf("failed receipts pay (error - %v request-id - %s receipts-id %s response - %v)", err, requestID, createdReceiptsID, respPayReceipt)
@@ -155,16 +156,16 @@ func (c *SubscribeAPI) payCheckP2P(data PaymentDetails, createdReceiptsID string
 }
 
 // create p2p check and pay p2p check
-func (c *SubscribeAPI) PayP2P(data PaymentDetails) (paidReceiptsID string, err error) {
+func (c *SubscribeAPI) PayP2P(ctx context.Context, data PaymentDetails) (paidReceiptsID string, err error) {
 	// create check
-	createdReceiptsID, err := c.createCheckP2P(data)
+	createdReceiptsID, err := c.createCheckP2P(ctx, data)
 
 	if err != nil {
 		return createdReceiptsID, err
 	}
 
 	// pay check
-	paidReceiptsID, err = c.payCheckP2P(data, createdReceiptsID)
+	paidReceiptsID, err = c.payCheckP2P(ctx, data, createdReceiptsID)
 
 	if err != nil {
 		return createdReceiptsID, err

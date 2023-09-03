@@ -2,11 +2,13 @@ package paymego
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -16,6 +18,7 @@ type SubscribeAPI struct {
 	baseURL    string
 	httpClient http.Client
 	logger     *log.Logger
+	timeout    time.Duration
 }
 
 type SubsribeAPIOpts struct {
@@ -24,12 +27,16 @@ type SubsribeAPIOpts struct {
 	Logger     *log.Logger
 	HTTPClient http.Client
 	BaseURL    string
+	Timeout    time.Duration
 }
 
 type xAuthHeaders struct {
 	paycomID  string
 	paycomKey string
 }
+
+// Define a constant for an unlimited timeout
+const unlimitedTimeout = 0
 
 // NewSubscribeAPI returns new instance of SubscribeAPI
 func NewSubscribeAPI(args SubsribeAPIOpts) (SubscribeAPI, error) {
@@ -43,12 +50,31 @@ func NewSubscribeAPI(args SubsribeAPIOpts) (SubscribeAPI, error) {
 		baseURL:    args.BaseURL,
 		logger:     args.Logger,
 		headers:    getXAuthHeaders(args.PaycomID, args.PaycomKey),
+		timeout:    args.Timeout,
 	}
 
 	return subscribeAPI, nil
 }
 
-func (c *SubscribeAPI) sendRequest(requestID, method string, params interface{}, withID bool) (*PaymeResponse, error) {
+func (c *SubscribeAPI) sendRequest(
+	ctx context.Context,
+	requestID, method string,
+	params interface{},
+	withID bool,
+	timeout ...time.Duration,
+) (*PaymeResponse, error) {
+	var requestTimeout time.Duration
+
+	if len(timeout) > 0 {
+		requestTimeout = timeout[0]
+	} else {
+		requestTimeout = 0 // Default timeout (adjust as needed)
+	}
+
+	// Create a context with the specified timeout.
+	ctx, cancel := context.WithTimeout(ctx, requestTimeout)
+	defer cancel()
+
 	data := map[string]interface{}{
 		"id":     requestID,
 		"method": method,
@@ -56,22 +82,21 @@ func (c *SubscribeAPI) sendRequest(requestID, method string, params interface{},
 	}
 
 	requestBody, _ := json.Marshal(data)
-	request, err := http.NewRequest("POST", c.baseURL, bytes.NewBuffer(requestBody))
-
+	req, err := http.NewRequestWithContext(ctx, "POST", c.baseURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, err
 	}
 
 	if withID {
-		request.Header.Set("X-Auth", c.headers.paycomID)
+		req.Header.Set("X-Auth", c.headers.paycomID)
 	} else {
-		request.Header.Set("X-Auth", fmt.Sprintf("%s:%s", c.headers.paycomID, c.headers.paycomKey))
+		req.Header.Set("X-Auth", fmt.Sprintf("%s:%s", c.headers.paycomID, c.headers.paycomKey))
 	}
 
-	request.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	client := http.Client{}
-	response, err := client.Do(request)
+	response, err := client.Do(req)
 
 	if err != nil {
 		return nil, err
@@ -91,7 +116,7 @@ func (c *SubscribeAPI) sendRequest(requestID, method string, params interface{},
 		return nil, err
 	}
 
-	// handle error case with payme specific error codes
+	// Handle error response with payme specific error codes
 	responseJson, err = handleErrorResponse(responseJson)
 
 	if err != nil {

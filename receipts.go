@@ -24,7 +24,7 @@ type PaymentData struct {
 type PaymentDetails struct {
 	Client PaymentData
 	Driver PaymentData
-	Amount float64
+	Amount int
 }
 
 type Account struct {

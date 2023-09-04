@@ -17,6 +17,7 @@ type Card struct {
 type Error struct {
 	Message string `json:"message"`
 	Code    int    `json:"code"`
+	Data    string `json:"data"`
 	Origin  string `json:"origin"`
 }
 

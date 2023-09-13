@@ -150,7 +150,7 @@ func (c *SubscribeAPI) payCheckP2P(ctx context.Context, data PaymentDetails, cre
 
 	paidReceiptsID = respPayReceipt.Result.Receipt.ID
 
-	logrus.Infof("receipts paid for order - %v request-id - %s transaction id - %s", data.Client.OrderID, requestID, paidReceiptsID)
+	logrus.Infof("receipts p2p paid for order - %v request-id - %s transaction id - %s", data.Client.OrderID, requestID, paidReceiptsID)
 
 	return paidReceiptsID, nil
 }

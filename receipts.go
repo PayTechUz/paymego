@@ -39,7 +39,7 @@ func (c *SubscribeAPI) createCheck(ctx context.Context, data PaymentDetails) (cr
 	requestID := fmt.Sprintf("ReceiptsCreate:MerchantTransaction:%s", data.Client.OrderID)
 
 	receiptParams := map[string]interface{}{
-		"amount": data.Amount,
+		"amount": FromSoumToTiyin(data.Amount),
 		"account": Account{
 			OrderID: data.Client.OrderID,
 			CardID:  data.Client.CardData.ID,
@@ -112,7 +112,7 @@ func (c *SubscribeAPI) createCheckP2P(ctx context.Context, data PaymentDetails) 
 	description := fmt.Sprintf("P2PTransaction for order %s", data.Client.OrderID)
 
 	receiptParams := map[string]interface{}{
-		"amount":      data.Amount,
+		"amount":      FromSoumToTiyin(data.Amount),
 		"token":       data.Driver.CardData.Token,
 		"description": description,
 	}

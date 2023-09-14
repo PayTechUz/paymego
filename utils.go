@@ -32,3 +32,11 @@ func handleErrorResponse(responseJson PaymeResponse) (PaymeResponse, error) {
 
 	return responseJson, paymeError
 }
+
+func FromSoumToTiyin(amount int) int {
+	return amount * 100
+}
+
+func FromTiyinToSoum(amount int) int {
+	return amount / 100
+}
